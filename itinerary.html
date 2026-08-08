@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Itinerary - Austria Visa</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='12' fill='%23673ab7'/%3E%3Crect x='15' y='20' width='70' height='60' rx='4' fill='white'/%3E%3Crect x='25' y='30' width='20' height='25' rx='2' fill='%23673ab7'/%3E%3Cline x1='52' y1='32' x2='72' y2='32' stroke='%23673ab7' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='52' y1='40' x2='72' y2='40' stroke='%23ccc' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='52' y1='47' x2='65' y2='47' stroke='%23ccc' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='25' y1='62' x2='72' y2='62' stroke='%23ddd' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='25' y1='69' x2='55' y2='69' stroke='%23ddd' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f0ebf8;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, #673ab7 0%, #7c4dff 100%);
+      padding: 24px 32px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .form-header h1 {
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      font-size: 32px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .form-container {
+      max-width: 640px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 8px;
+      padding: 24px 24px 8px 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+      border-top: 10px solid #673ab7;
+    }
+
+    .form-card h2 {
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #202124;
+      margin-bottom: 4px;
+    }
+
+    .form-card .subtitle {
+      font-size: 12px;
+      color: #5f6368;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #5f6368;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group label .required {
+      color: #d93025;
+      margin-left: 2px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group input[type="time"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-bottom: 1px solid #dadce0;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      color: #202124;
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-bottom: 2px solid #673ab7;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    .radio-group, .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .radio-group label, .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #202124;
+      cursor: pointer;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+
+    .radio-group input[type="radio"],
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      accent-color: #673ab7;
+      cursor: pointer;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 20px 0;
+    }
+
+    .flight-segment {
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .flight-segment h3 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #673ab7;
+      margin-bottom: 12px;
+    }
+
+    .remove-segment {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #d93025;
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add-segment {
+      background: #f3e8fd;
+      color: #673ab7;
+      border: 2px dashed #673ab7;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 16px;
+    }
+
+    .add-segment:hover {
+      background: #e8d5f5;
+    }
+
+    .submit-section {
+      text-align: center;
+      padding: 24px 0 40px 0;
+    }
+
+    .submit-btn {
+      background: #673ab7;
+      color: white;
+      border: none;
+      padding: 12px 48px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover {
+      background: #5e35b1;
+      box-shadow: 0 2px 8px rgba(103,58,187,0.4);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: #ff6d00;
+      z-index: 200;
+      transition: width 0.3s;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .success-message .check-icon {
+      width: 72px;
+      height: 72px;
+      background: #e8f5e9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+      color: #2e7d32;
+    }
+
+    .success-message h2 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 24px;
+      color: #202124;
+      margin-bottom: 12px;
+    }
+
+    .success-message p {
+      color: #5f6368;
+      font-size: 14px;
+    }
+
+    .error-text {
+      color: #d93025;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .doc-preview {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .doc-preview h3 {
+      font-size: 14px;
+      font-weight: 500;
+      color: #673ab7;
+      margin-bottom: 12px;
+    }
+
+    .doc-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .doc-preview th {
+      background: #f0f0f0;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    .doc-preview td {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .form-header h1 { font-size: 24px; }
+      .row, .row-3 { grid-template-columns: 1fr; }
+      .form-container { padding: 0 8px; }
+      .form-card { padding: 16px 16px 8px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+  <div class="form-header">
+    <h1>Flight Itinerary Form</h1>
+    <p>Austria Visa Application &mdash; International & Internal Travel Details</p>
+  </div>
+
+  <div class="form-container">
+    <form id="itineraryForm" onsubmit="return handleSubmit(event)">
+
+      <!-- Email -->
+      <div class="form-card" style="border-top-color: #ff6d00;">
+        <h2>Your Email Address</h2>
+        <p class="subtitle">A copy of your flight itinerary will be sent to this email</p>
+
+        <div class="form-group">
+          <label>E-mail address *</label>
+          <input type="email" name="email" required placeholder="you@example.com">
+        </div>
+      </div>
+
+      <!-- Applicant Info -->
+      <div class="form-card">
+        <h2>Applicant Information</h2>
+        <p class="subtitle">Basic details for the itinerary document</p>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Surname (Family name) *</label>
+            <input type="text" name="surname" required>
+          </div>
+          <div class="form-group">
+            <label>First name(s) *</label>
+            <input type="text" name="firstName" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Nationality *</label>
+            <input type="text" name="nationality" required placeholder="e.g. Indian">
+          </div>
+          <div class="form-group">
+            <label>Passport Number *</label>
+            <input type="text" name="passportNumber" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Visa Category *</label>
+          <select name="visaCategory" required>
+            <option value="">Select...</option>
+            <option value="Residence Permit (Pupil) – National Visa (D)">Residence Permit (Pupil) – National Visa (D)</option>
+            <option value="National Visa (D) – Employment">National Visa (D) – Employment</option>
+            <option value="National Visa (D) – Family Reunion">National Visa (D) – Family Reunion</option>
+            <option value="National Visa (D) – Studies">National Visa (D) – Studies</option>
+            <option value="National Visa (D) – Other">National Visa (D) – Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Flight Segments -->
+      <div class="form-card">
+        <h2>International Flight Itinerary</h2>
+        <p class="subtitle">Add your outbound and return flight details</p>
+
+        <div id="flightSegments">
+          <!-- Segment 1 - Outbound -->
+          <div class="flight-segment" data-segment="1">
+            <button type="button" class="remove-segment" onclick="removeSegment(this)" style="display:none;">&times;</button>
+            <h3>✈ Outbound Journey</h3>
+
+            <div class="form-group">
+              <label>Travel Sector *</label>
+              <select name="sector_1" required>
+                <option value="Outbound Journey">Outbound Journey</option>
+                <option value="Return Journey">Return Journey</option>
+                <option value="Transit">Transit</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label>Departure Date *</label>
+                <input type="date" name="departDate_1" required>
+              </div>
+              <div class="form-group">
+                <label>Departure Time</label>
+                <input type="time" name="departTime_1">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label>Departure Airport *</label>
+                <input type="text" name="departAirport_1" required placeholder="e.g. Mumbai International Airport (BOM)">
+              </div>
+              <div class="form-group">
+                <label>Departure Country *</label>
+                <input type="text" name="departCountry_1" required placeholder="e.g. India">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label>Arrival Date *</label>
+                <input type="date" name="arrivalDate_1" required>
+              </div>
+              <div class="form-group">
+                <label>Arrival Time</label>
+                <input type="time" name="arrivalTime_1">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label>Arrival Airport *</label>
+                <input type="text" name="arrivalAirport_1" required placeholder="e.g. Vienna International Airport (VIE)">
+              </div>
+              <div class="form-group">
+                <label>Arrival Country *</label>
+                <input type="text" name="arrivalCountry_1" required placeholder="e.g. Austria" value="Austria">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Airline / Flight Number</label>
+              <input type="text" name="airline_1" placeholder="e.g. Austrian Airlines OS 52">
+            </div>
+
+            <div class="form-group">
+              <label>Purpose of Travel *</label>
+              <input type="text" name="purpose_1" required placeholder="e.g. Entry into Austria for Studies">
+            </div>
+          </div>
+        </div>
+
+        <div class="add-segment" onclick="addSegment()">
+          + Add Another Flight Segment (Return Journey)
+        </div>
+      </div>
+
+      <!-- Internal Travel -->
+      <div class="form-card">
+        <h2>Internal Travel within Austria</h2>
+        <p class="subtitle">Travel from arrival airport to your final destination</p>
+
+        <div class="form-group">
+          <label>Who will receive you? *</label>
+          <input type="text" name="receivedBy" required placeholder="e.g. Fr Wolfgang Senzel">
+        </div>
+
+        <div class="form-group">
+          <label>Travel method to destination *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="travelMethod" value="Private vehicle" required> Private vehicle</label>
+            <label><input type="radio" name="travelMethod" value="Public transport"> Public transport</label>
+            <label><input type="radio" name="travelMethod" value="Taxi"> Taxi</label>
+            <label><input type="radio" name="travelMethod" value="Organized transfer"> Organized transfer</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>From (Airport) *</label>
+            <input type="text" name="internalFrom" required placeholder="e.g. Vienna International Airport (VIE)">
+          </div>
+          <div class="form-group">
+            <label>To (Destination) *</label>
+            <input type="text" name="internalTo" required placeholder="e.g. Salzburg">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Arranged by</label>
+          <input type="text" name="arrangedBy" placeholder="e.g. Fr Wolfgang Senzel">
+        </div>
+      </div>
+
+      <!-- Institution / Accommodation -->
+      <div class="form-card">
+        <h2>Institution & Accommodation</h2>
+        <p class="subtitle">School, employer, or host details</p>
+
+        <div class="form-group">
+          <label>School / Institution Name *</label>
+          <input type="text" name="institutionName" required placeholder="e.g. Privatgymnasium der Herz-Jesu-Missionare">
+        </div>
+
+        <div class="form-group">
+          <label>Accommodation Address *</label>
+          <textarea name="accommodationAddress" required rows="2" placeholder="Full address including street, postal code, city, country"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Purpose of Stay *</label>
+          <select name="purposeOfStay" required>
+            <option value="">Select...</option>
+            <option value="Studies">Studies</option>
+            <option value="Employment">Employment</option>
+            <option value="Family Reunion">Family Reunion</option>
+            <option value="Business">Business</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Declaration -->
+      <div class="form-card">
+        <h2>Declaration</h2>
+        <p class="subtitle">Please read and accept</p>
+
+        <div class="form-group">
+          <label style="font-size:13px; color:#202124; font-weight:400; line-height:1.6;">
+            I hereby declare that the above-mentioned travel information and itinerary are true and correct to the best of my knowledge and are submitted in support of the Austria National Visa (D) application.
+          </label>
+          <div class="checkbox-group" style="margin-top:8px;">
+            <label><input type="checkbox" name="declaration" required> I accept the declaration *</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Place *</label>
+            <input type="text" name="signingPlace" required placeholder="e.g. Pune, India">
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" name="signingDate" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Button -->
+      <div style="text-align:center; padding: 8px 0;">
+        <button type="button" class="submit-btn" style="background:#333; margin-right:8px;" onclick="previewDocument()">Preview Document</button>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">Generate Itinerary</button>
+      </div>
+
+    </form>
+
+    <!-- Document Preview -->
+    <div class="doc-preview" id="docPreview" style="display:none;">
+      <h3>Document Preview</h3>
+      <div id="previewContent"></div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+      <div class="check-icon">&#10003;</div>
+      <h2>Itinerary Generated</h2>
+      <p>Your flight itinerary document has been sent to your email. Please check your inbox (and spam folder).</p>
+    </div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxHYqjY_89e88UiORvR1jzDPgczfBSo5NpS6pTuMYyDVg680OoYkQ51Q1DSLmadT6VM/exec';
+
+    let segmentCount = 1;
+
+    function addSegment() {
+      segmentCount++;
+      const container = document.getElementById('flightSegments');
+      const segment = document.createElement('div');
+      segment.className = 'flight-segment';
+      segment.setAttribute('data-segment', segmentCount);
+      segment.innerHTML = `
+        <button type="button" class="remove-segment" onclick="removeSegment(this)">&times;</button>
+        <h3>✈ Flight Segment ${segmentCount}</h3>
+
+        <div class="form-group">
+          <label>Travel Sector *</label>
+          <select name="sector_${segmentCount}" required>
+            <option value="Return Journey">Return Journey</option>
+            <option value="Outbound Journey">Outbound Journey</option>
+            <option value="Transit">Transit</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Departure Date *</label>
+            <input type="date" name="departDate_${segmentCount}" required>
+          </div>
+          <div class="form-group">
+            <label>Departure Time</label>
+            <input type="time" name="departTime_${segmentCount}">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Departure Airport *</label>
+            <input type="text" name="departAirport_${segmentCount}" required placeholder="e.g. Vienna International Airport (VIE)">
+          </div>
+          <div class="form-group">
+            <label>Departure Country *</label>
+            <input type="text" name="departCountry_${segmentCount}" required placeholder="e.g. Austria" value="Austria">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Arrival Date *</label>
+            <input type="date" name="arrivalDate_${segmentCount}" required>
+          </div>
+          <div class="form-group">
+            <label>Arrival Time</label>
+            <input type="time" name="arrivalTime_${segmentCount}">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Arrival Airport *</label>
+            <input type="text" name="arrivalAirport_${segmentCount}" required placeholder="e.g. Mumbai International Airport (BOM)">
+          </div>
+          <div class="form-group">
+            <label>Arrival Country *</label>
+            <input type="text" name="arrivalCountry_${segmentCount}" required placeholder="e.g. India">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Airline / Flight Number</label>
+          <input type="text" name="airline_${segmentCount}" placeholder="e.g. Austrian Airlines OS 51">
+        </div>
+
+        <div class="form-group">
+          <label>Purpose of Travel *</label>
+          <input type="text" name="purpose_${segmentCount}" required placeholder="e.g. Return to home country">
+        </div>
+      `;
+      container.appendChild(segment);
+      window.scrollTo(0, segment.offsetTop - 100);
+    }
+
+    function removeSegment(btn) {
+      btn.closest('.flight-segment').remove();
+    }
+
+    function previewDocument() {
+      const form = document.getElementById('itineraryForm');
+      const formData = new FormData(form);
+      const data = {};
+
+      for (const [key, value] of formData.entries()) {
+        if (!key.includes('_')) {
+          data[key] = value;
+        }
+      }
+
+      // Build flight table rows
+      let flightRows = '';
+      const segments = document.querySelectorAll('.flight-segment');
+      segments.forEach((seg, i) => {
+        const num = seg.getAttribute('data-segment');
+        const sector = formData.get(`sector_${num}`) || '';
+        const departDate = formData.get(`departDate_${num}`) || '';
+        const departAirport = formData.get(`departAirport_${num}`) || '';
+        const departCountry = formData.get(`departCountry_${num}`) || '';
+        const arrivalAirport = formData.get(`arrivalAirport_${num}`) || '';
+        const arrivalCountry = formData.get(`arrivalCountry_${num}`) || '';
+        const purpose = formData.get(`purpose_${num}`) || '';
+
+        flightRows += `
+          <tr>
+            <td>${sector}</td>
+            <td>${departDate}</td>
+            <td>${departAirport}, ${departCountry}</td>
+            <td>${arrivalAirport}, ${arrivalCountry}</td>
+            <td>${purpose}</td>
+          </tr>
+        `;
+      });
+
+      const preview = `
+        <div style="font-family:'Times New Roman',serif; max-width:600px; margin:0 auto;">
+          <div style="text-align:center; border-bottom:3px double #000; padding-bottom:12px; margin-bottom:16px;">
+            <h1 style="font-size:14px; letter-spacing:2px; margin:0;">REPUBLIC OF AUSTRIA</h1>
+            <h2 style="font-size:12px; font-weight:normal; margin:4px 0 0;">PROPOSED TRAVEL ITINERARY</h2>
+          </div>
+
+          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">APPLICANT INFORMATION</div>
+          <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">
+            <tr><td style="padding:4px 8px; font-weight:bold; width:140px;">Surname</td><td style="padding:4px 8px;">${(data.surname || '').toUpperCase()}</td></tr>
+            <tr><td style="padding:4px 8px; font-weight:bold;">Given Name</td><td style="padding:4px 8px;">${(data.firstName || '').toUpperCase()}</td></tr>
+            <tr><td style="padding:4px 8px; font-weight:bold;">Nationality</td><td style="padding:4px 8px;">${data.nationality || ''}</td></tr>
+            <tr><td style="padding:4px 8px; font-weight:bold;">Passport No</td><td style="padding:4px 8px;">${data.passportNumber || ''}</td></tr>
+            <tr><td style="padding:4px 8px; font-weight:bold;">Visa Category</td><td style="padding:4px 8px;">${data.visaCategory || ''}</td></tr>
+          </table>
+
+          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INTERNATIONAL FLIGHT ITINERARY</div>
+          <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px;">
+            <tr style="background:#f0f0f0;">
+              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Travel Sector</th>
+              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Date</th>
+              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Departure</th>
+              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Arrival</th>
+              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Purpose</th>
+            </tr>
+            ${flightRows}
+          </table>
+
+          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INTERNAL TRAVEL</div>
+          <p style="font-size:12px; margin:8px 0;">Upon arrival, the applicant will be received by: <strong>${data.receivedBy || ''}</strong></p>
+          <p style="font-size:12px; margin:8px 0;">Travel from <strong>${data.internalFrom || ''}</strong> to <strong>${data.internalTo || ''}</strong> by ${data.travelMethod || ''}.</p>
+
+          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INSTITUTION</div>
+          <p style="font-size:12px; margin:8px 0;"><strong>${data.institutionName || ''}</strong></p>
+          <p style="font-size:12px; margin:8px 0;">${(data.accommodationAddress || '').replace(/\n/g, '<br>')}</p>
+        </div>
+      `;
+
+      document.getElementById('previewContent').innerHTML = preview;
+      document.getElementById('docPreview').style.display = 'block';
+      document.getElementById('docPreview').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const form = document.getElementById('itineraryForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const progressBar = document.getElementById('progressBar');
+
+      if (!form.declaration.checked) {
+        alert('Please accept the declaration to proceed.');
+        return false;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Generating...';
+      progressBar.style.width = '30%';
+
+      try {
+        const formData = new FormData(form);
+        const data = {};
+
+        // Collect simple fields
+        for (const [key, value] of formData.entries()) {
+          if (!key.includes('_')) {
+            data[key] = value;
+          }
+        }
+
+        // Collect flight segments
+        data.flights = [];
+        const segments = document.querySelectorAll('.flight-segment');
+        segments.forEach(seg => {
+          const num = seg.getAttribute('data-segment');
+          data.flights.push({
+            sector: formData.get(`sector_${num}`),
+            departDate: formData.get(`departDate_${num}`),
+            departTime: formData.get(`departTime_${num}`),
+            departAirport: formData.get(`departAirport_${num}`),
+            departCountry: formData.get(`departCountry_${num}`),
+            arrivalDate: formData.get(`arrivalDate_${num}`),
+            arrivalTime: formData.get(`arrivalTime_${num}`),
+            arrivalAirport: formData.get(`arrivalAirport_${num}`),
+            arrivalCountry: formData.get(`arrivalCountry_${num}`),
+            airline: formData.get(`airline_${num}`),
+            purpose: formData.get(`purpose_${num}`)
+          });
+        });
+
+        progressBar.style.width = '70%';
+
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'itinerary', ...data }),
+          headers: { 'Content-Type': 'text/plain' }
+        });
+
+        const result = await response.json();
+        progressBar.style.width = '100%';
+
+        if (!result.success) throw new Error(result.message);
+
+        form.style.display = 'none';
+        document.getElementById('docPreview').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        window.scrollTo(0, 0);
+
+      } catch (error) {
+        alert('Error: ' + error.message + '\nPlease try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Generate Itinerary';
+        progressBar.style.width = '0%';
+      }
+
+      return false;
+    }
+  </script>
+</body>
+</html>
