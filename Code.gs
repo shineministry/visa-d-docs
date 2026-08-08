@@ -106,19 +106,22 @@ function fillTemplate(data) {
     '{{FIRSTNAME}}': firstName,
     '{{fullName}}': fullName,
     '{{nationality}}': nationality,
+    '{{passportCountry}}': nationality === 'Indian' ? 'India' : nationality,
     '{{passportNumber}}': passportNo,
     '{{visaCategory}}': visaCategory,
     '{{arrivalDate}}': arrival,
     '{{departureDate}}': departure,
     '{{borderCrossing}}': borderCrossing,
+    '{{arrivalAirport}}': data.flights && data.flights[0] ? (data.flights[0].arrivalAirport || 'Vienna International Airport (VIE)') + ', ' + (data.flights[0].arrivalCountry || 'Austria') : 'Vienna International Airport (VIE), Austria',
+    '{{flightSector}}': data.flights && data.flights[0] ? data.flights[0].sector || 'Outbound Journey' : 'Outbound Journey',
+    '{{flightPurpose}}': data.flights && data.flights[0] ? data.flights[0].purpose || 'Entry into Austria for ' + purpose : 'Entry into Austria for ' + purpose,
     '{{purpose}}': purpose,
     '{{hostName}}': invitingPerson,
     '{{hostAddress}}': invitingAddress,
     '{{employerDetails}}': employerInfo,
-    '{{signingPlace}}': place,
-    '{{signingDate}}': formatDate(data.date || new Date().toISOString().split('T')[0]),
+    '{{institutionLabel}}': purpose.toLowerCase().includes('study') || purpose.toLowerCase().includes('pupil') ? 'School' : purpose.toLowerCase().includes('employ') ? 'Employer' : 'Host Institution',
+    '{{institutionName}}': employerInfo,
     '{{destination}}': destination,
-    '{{stayDuration}}': stayDuration,
     '{{travelMethod}}': data.travelMethod || 'private vehicle',
     '{{internalFrom}}': data.internalFrom || 'Vienna International Airport (VIE)',
     '{{internalTo}}': destination,
@@ -138,7 +141,9 @@ function fillTemplate(data) {
     '{{entries}}': data.entriesRequested || '',
     '{{fundingSource}}': data.costCoveredBy || '',
     '{{meansOfSupport}}': data.meansOfSupport || '',
-    '{{hostPhone}}': data.invitingPhone || ''
+    '{{hostPhone}}': data.invitingPhone || '',
+    '{{signingPlace}}': place,
+    '{{signingDate}}': formatDate(data.date || new Date().toISOString().split('T')[0])
   };
 
   // Replace each placeholder in the document body
