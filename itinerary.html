@@ -299,42 +299,6 @@
       display: none;
     }
 
-    .doc-preview {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 16px;
-    }
-
-    .doc-preview h3 {
-      font-size: 14px;
-      font-weight: 500;
-      color: #673ab7;
-      margin-bottom: 12px;
-    }
-
-    .doc-preview table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-
-    .doc-preview th {
-      background: #f0f0f0;
-      padding: 8px 10px;
-      text-align: left;
-      font-weight: bold;
-      border: 1px solid #ccc;
-      text-transform: uppercase;
-      font-size: 10px;
-    }
-
-    .doc-preview td {
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-    }
-
     @media (max-width: 600px) {
       .form-header h1 { font-size: 24px; }
       .row, .row-3 { grid-template-columns: 1fr; }
@@ -499,10 +463,10 @@
         <div class="form-group">
           <label>Travel method to destination *</label>
           <div class="radio-group">
-            <label><input type="radio" name="travelMethod" value="Private vehicle" required> Private vehicle</label>
-            <label><input type="radio" name="travelMethod" value="Public transport"> Public transport</label>
-            <label><input type="radio" name="travelMethod" value="Taxi"> Taxi</label>
-            <label><input type="radio" name="travelMethod" value="Organized transfer"> Organized transfer</label>
+            <label><input type="radio" name="travelMethod" value="private vehicle" required> Private vehicle</label>
+            <label><input type="radio" name="travelMethod" value="public transport"> Public transport</label>
+            <label><input type="radio" name="travelMethod" value="taxi"> Taxi</label>
+            <label><input type="radio" name="travelMethod" value="organized transfer"> Organized transfer</label>
           </div>
         </div>
 
@@ -535,18 +499,18 @@
 
         <div class="form-group">
           <label>Accommodation Address *</label>
-          <textarea name="accommodationAddress" required rows="2" placeholder="Full address including street, postal code, city, country"></textarea>
+          <textarea name="accommodationAddress" required rows="3" placeholder="Full address including street, postal code, city, country"></textarea>
         </div>
 
         <div class="form-group">
           <label>Purpose of Stay *</label>
           <select name="purposeOfStay" required>
             <option value="">Select...</option>
-            <option value="Studies">Studies</option>
-            <option value="Employment">Employment</option>
-            <option value="Family Reunion">Family Reunion</option>
-            <option value="Business">Business</option>
-            <option value="Other">Other</option>
+            <option value="studies">Studies</option>
+            <option value="employment">Employment</option>
+            <option value="family reunion">Family Reunion</option>
+            <option value="business">Business</option>
+            <option value="other">Other</option>
           </select>
         </div>
       </div>
@@ -577,11 +541,6 @@
         </div>
       </div>
 
-      <!-- Preview Button -->
-      <div style="text-align:center; padding: 8px 0;">
-        <button type="button" class="submit-btn" style="background:#333; margin-right:8px;" onclick="previewDocument()">Preview Document</button>
-      </div>
-
       <!-- Submit -->
       <div class="submit-section">
         <button type="submit" class="submit-btn" id="submitBtn">Generate Itinerary</button>
@@ -589,17 +548,12 @@
 
     </form>
 
-    <!-- Document Preview -->
-    <div class="doc-preview" id="docPreview" style="display:none;">
-      <h3>Document Preview</h3>
-      <div id="previewContent"></div>
-    </div>
-
     <!-- Success Message -->
     <div class="success-message" id="successMessage">
       <div class="check-icon">&#10003;</div>
       <h2>Itinerary Generated</h2>
       <p>Your flight itinerary document has been sent to your email. Please check your inbox (and spam folder).</p>
+      <p style="margin-top:16px;"><a href="https://docs.google.com/document/d/1pbK2IfT1eTrScej1yUWRavA49qvCkAHlNUYRX2KFfvM/edit?usp=sharing" target="_blank" style="color:#673ab7;">View Template Document</a></p>
     </div>
   </div>
 
@@ -689,84 +643,6 @@
       btn.closest('.flight-segment').remove();
     }
 
-    function previewDocument() {
-      const form = document.getElementById('itineraryForm');
-      const formData = new FormData(form);
-      const data = {};
-
-      for (const [key, value] of formData.entries()) {
-        if (!key.includes('_')) {
-          data[key] = value;
-        }
-      }
-
-      // Build flight table rows
-      let flightRows = '';
-      const segments = document.querySelectorAll('.flight-segment');
-      segments.forEach((seg, i) => {
-        const num = seg.getAttribute('data-segment');
-        const sector = formData.get(`sector_${num}`) || '';
-        const departDate = formData.get(`departDate_${num}`) || '';
-        const departAirport = formData.get(`departAirport_${num}`) || '';
-        const departCountry = formData.get(`departCountry_${num}`) || '';
-        const arrivalAirport = formData.get(`arrivalAirport_${num}`) || '';
-        const arrivalCountry = formData.get(`arrivalCountry_${num}`) || '';
-        const purpose = formData.get(`purpose_${num}`) || '';
-
-        flightRows += `
-          <tr>
-            <td>${sector}</td>
-            <td>${departDate}</td>
-            <td>${departAirport}, ${departCountry}</td>
-            <td>${arrivalAirport}, ${arrivalCountry}</td>
-            <td>${purpose}</td>
-          </tr>
-        `;
-      });
-
-      const preview = `
-        <div style="font-family:'Times New Roman',serif; max-width:600px; margin:0 auto;">
-          <div style="text-align:center; border-bottom:3px double #000; padding-bottom:12px; margin-bottom:16px;">
-            <h1 style="font-size:14px; letter-spacing:2px; margin:0;">REPUBLIC OF AUSTRIA</h1>
-            <h2 style="font-size:12px; font-weight:normal; margin:4px 0 0;">PROPOSED TRAVEL ITINERARY</h2>
-          </div>
-
-          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">APPLICANT INFORMATION</div>
-          <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:12px;">
-            <tr><td style="padding:4px 8px; font-weight:bold; width:140px;">Surname</td><td style="padding:4px 8px;">${(data.surname || '').toUpperCase()}</td></tr>
-            <tr><td style="padding:4px 8px; font-weight:bold;">Given Name</td><td style="padding:4px 8px;">${(data.firstName || '').toUpperCase()}</td></tr>
-            <tr><td style="padding:4px 8px; font-weight:bold;">Nationality</td><td style="padding:4px 8px;">${data.nationality || ''}</td></tr>
-            <tr><td style="padding:4px 8px; font-weight:bold;">Passport No</td><td style="padding:4px 8px;">${data.passportNumber || ''}</td></tr>
-            <tr><td style="padding:4px 8px; font-weight:bold;">Visa Category</td><td style="padding:4px 8px;">${data.visaCategory || ''}</td></tr>
-          </table>
-
-          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INTERNATIONAL FLIGHT ITINERARY</div>
-          <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px;">
-            <tr style="background:#f0f0f0;">
-              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Travel Sector</th>
-              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Date</th>
-              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Departure</th>
-              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Arrival</th>
-              <th style="padding:6px 8px; border:1px solid #ccc; text-align:left;">Purpose</th>
-            </tr>
-            ${flightRows}
-          </table>
-
-          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INTERNAL TRAVEL</div>
-          <p style="font-size:12px; margin:8px 0;">Upon arrival, the applicant will be received by: <strong>${data.receivedBy || ''}</strong></p>
-          <p style="font-size:12px; margin:8px 0;">Travel from <strong>${data.internalFrom || ''}</strong> to <strong>${data.internalTo || ''}</strong> by ${data.travelMethod || ''}.</p>
-
-          <div style="font-size:11px; font-weight:bold; text-transform:uppercase; margin:16px 0 8px; border-bottom:1px solid #ccc; padding-bottom:4px;">INSTITUTION</div>
-          <p style="font-size:12px; margin:8px 0;"><strong>${data.institutionName || ''}</strong></p>
-          <p style="font-size:12px; margin:8px 0;">${(data.accommodationAddress || '').replace(/\n/g, '<br>')}</p>
-        </div>
-      `;
-
-      document.getElementById('previewContent').innerHTML = preview;
-      document.getElementById('docPreview').style.display = 'block';
-      document.getElementById('docPreview').scrollIntoView({ behavior: 'smooth' });
-    }
-
     async function handleSubmit(e) {
       e.preventDefault();
 
@@ -828,7 +704,6 @@
         if (!result.success) throw new Error(result.message);
 
         form.style.display = 'none';
-        document.getElementById('docPreview').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
         window.scrollTo(0, 0);
 

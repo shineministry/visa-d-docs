@@ -1,9 +1,14 @@
 // ============================================
 // Visa D Application - Google Apps Script Backend
-// Generates formal itinerary documents
+// Uses existing Google Doc template, fills placeholders, sends copy
 // ============================================
 
 const SHEET_NAME = 'Applications';
+const FOLDER_NAME = 'Visa D Itineraries';
+
+// Template document ID from your Google Docs URL
+// https://docs.google.com/document/d/1vhlz9vgiV3Eeqg0xjzse25W99CpP59HPrz2tWcl3vpI/edit
+const TEMPLATE_DOC_ID = '1pbK2IfT1eTrScej1yUWRavA49qvCkAHlNUYRX2KFfvM';
 
 // -----------------------------------------------
 // doPost - Main entry point
@@ -31,24 +36,114 @@ function doPost(e) {
 function handleFormSubmission(data) {
   saveToSheet(data);
 
-  const itineraryHtml = buildItineraryDocument(data);
+  const doc = fillTemplate(data);
+  const docUrl = doc.getUrl();
+  const pdfBlob = doc.getAs('application/pdf').setName(doc.getName() + '.pdf');
+
   const subject = `REPUBLIC OF AUSTRIA - Travel Itinerary - ${(data.firstName || '').toUpperCase()} ${(data.surname || '').toUpperCase()}`;
 
   GmailApp.sendEmail(data.email, subject, '', {
-    htmlBody: itineraryHtml,
+    htmlBody: buildEmailBody(data, docUrl),
+    attachments: [pdfBlob],
     name: 'Austrian Visa Application Portal'
   });
 
   const adminEmail = Session.getActiveUser().getEmail();
   if (adminEmail && adminEmail !== data.email) {
     GmailApp.sendEmail(adminEmail, `New Application: ${data.firstName} ${data.surname}`, '', {
-      htmlBody: buildAdminNotificationHtml(data)
+      htmlBody: buildAdminNotificationHtml(data, docUrl)
     });
   }
 
   return ContentService
-    .createTextOutput(JSON.stringify({ success: true, message: 'Application submitted successfully' }))
+    .createTextOutput(JSON.stringify({ success: true, message: 'Application submitted successfully', docUrl: docUrl }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// -----------------------------------------------
+// Fill Template - Copy doc and replace placeholders
+// -----------------------------------------------
+function fillTemplate(data) {
+  const surname = (data.surname || '').toUpperCase();
+  const firstName = (data.firstName || '').toUpperCase();
+  const fullName = surname + ' ' + firstName;
+  const nationality = data.currentNationality || data.nationality || '';
+  const passportNo = data.docNumber || data.passportNumber || '';
+  const visaCategory = data.visaCategory || 'Residence Permit (Pupil) – National Visa (D)';
+  const arrival = formatDate(data.arrivalDate);
+  const borderCrossing = data.borderCrossing || '';
+  const purpose = data.purposeOfJourney || '';
+  const invitingPerson = data.invitingPerson || '';
+  const invitingAddress = data.invitingAddress || '';
+  const employerInfo = data.employerInfo || '';
+  const place = data.place || '';
+  const destination = data.internalTo || 'Salzburg';
+  const stayDuration = data.stayDuration || '';
+  const departure = formatDate(data.departureDate);
+
+  // Get or create folder
+  let folder;
+  const folders = DriveApp.getFoldersByName(FOLDER_NAME);
+  if (folders.hasNext()) {
+    folder = folders.next();
+  } else {
+    folder = DriveApp.createFolder(FOLDER_NAME);
+  }
+
+  // Copy template document
+  const templateFile = DriveApp.getFileById(TEMPLATE_DOC_ID);
+  const newFile = templateFile.makeCopy(`${surname} ${firstName} - Travel Itinerary`, folder);
+  const doc = DocumentApp.openById(newFile.getId());
+  const body = doc.getBody();
+
+  // Replace all placeholders
+  const replacements = {
+    '{{surname}}': surname,
+    '{{firstName}}': firstName,
+    '{{fullName}}': fullName,
+    '{{nationality}}': nationality,
+    '{{passportNumber}}': passportNo,
+    '{{visaCategory}}': visaCategory,
+    '{{arrivalDate}}': arrival,
+    '{{departureDate}}': departure,
+    '{{borderCrossing}}': borderCrossing,
+    '{{purpose}}': purpose,
+    '{{hostName}}': invitingPerson,
+    '{{hostAddress}}': invitingAddress,
+    '{{employerDetails}}': employerInfo,
+    '{{signingPlace}}': place,
+    '{{signingDate}}': formatDate(data.date || new Date().toISOString().split('T')[0]),
+    '{{destination}}': destination,
+    '{{stayDuration}}': stayDuration,
+    '{{dateOfBirth}}': formatDate(data.dateOfBirth),
+    '{{placeOfBirth}}': data.placeOfBirth || '',
+    '{{countryOfBirth}}': data.countryOfBirth || '',
+    '{{sex}}': data.sex || '',
+    '{{maritalStatus}}': data.maritalStatus || '',
+    '{{passportIssueDate}}': formatDate(data.docIssueDate),
+    '{{passportExpiry}}': formatDate(data.docValidUntil),
+    '{{passportIssuer}}': data.docIssuedBy || '',
+    '{{telephone}}': data.telephone || '',
+    '{{homeAddress}}': data.homeAddress || '',
+    '{{occupation}}': data.currentOccupation || '',
+    '{{entries}}': data.entriesRequested || '',
+    '{{fundingSource}}': data.costCoveredBy || '',
+    '{{meansOfSupport}}': data.meansOfSupport || '',
+    '{{hostPhone}}': data.invitingPhone || ''
+  };
+
+  // Replace each placeholder in the document body
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    body.replaceText(placeholder, value);
+  }
+
+  doc.saveAndClose();
+
+  // Set sharing
+  newFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  Logger.log('Document created: ' + doc.getUrl());
+  return doc;
 }
 
 // -----------------------------------------------
@@ -61,7 +156,7 @@ function sendDemoEmail(email) {
     nationality: '{{nationality}}',
     currentNationality: '{{nationality}}',
     passportNumber: '{{passportNumber}}',
-    travelDocType: '{{travelDocType}}',
+    visaCategory: 'Residence Permit (Pupil) – National Visa (D)',
     purposeOfJourney: '{{purpose}}',
     arrivalDate: '{{arrivalDate}}',
     departureDate: '{{departureDate}}',
@@ -88,282 +183,41 @@ function sendDemoEmail(email) {
     costCoveredBy: '{{fundingSource}}',
     meansOfSupport: '{{meansOfSupport}}',
     place: '{{signingPlace}}',
-    date: '{{signingDate}}'
+    date: '{{signingDate}}',
+    internalTo: '{{destination}}'
   };
 
-  const html = buildItineraryDocument(demoData);
-  const subject = `[DEMO] REPUBLIC OF AUSTRIA - Travel Itinerary`;
+  const doc = fillTemplate(demoData);
+  const docUrl = doc.getUrl();
+  const pdfBlob = doc.getAs('application/pdf').setName(doc.getName() + '.pdf');
+
+  const subject = '[DEMO] REPUBLIC OF AUSTRIA - Travel Itinerary';
 
   GmailApp.sendEmail(email, subject, '', {
-    htmlBody: html,
+    htmlBody: buildEmailBody(demoData, docUrl),
+    attachments: [pdfBlob],
     name: 'Austrian Visa Application Portal [DEMO]'
   });
 
   return ContentService
-    .createTextOutput(JSON.stringify({ success: true, message: 'Demo email sent' }))
+    .createTextOutput(JSON.stringify({ success: true, message: 'Demo email sent', docUrl: docUrl }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 // -----------------------------------------------
-// Build Formal Itinerary Document
+// Build Email Body
 // -----------------------------------------------
-function buildItineraryDocument(data) {
-  const surname = (data.surname || '{{surname}}').toUpperCase();
-  const firstName = (data.firstName || '{{firstName}}').toUpperCase();
-  const fullName = `${surname} ${firstName}`;
-  const arrival = formatDate(data.arrivalDate);
-  const departure = formatDate(data.departureDate);
-  const nationality = data.currentNationality || data.nationality || '{{nationality}}';
-  const passportNo = data.docNumber || data.passportNumber || '{{passportNumber}}';
-  const place = data.place || '{{signingPlace}}';
-  const purpose = data.purposeOfJourney || '{{purpose}}';
-  const invitingPerson = data.invitingPerson || '{{hostName}}';
-  const invitingAddress = data.invitingAddress || '{{hostAddress}}';
-  const employerInfo = data.employerInfo || '{{employerDetails}}';
-  const borderCrossing = data.borderCrossing || '{{borderCrossing}}';
+function buildEmailBody(data, docUrl) {
+  const fullName = ((data.surname || '').toUpperCase() + ' ' + (data.firstName || '').toUpperCase()).trim();
 
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <style>
-    body {
-      font-family: 'Times New Roman', Times, serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-      color: #000;
-    }
-    .document {
-      max-width: 700px;
-      margin: 0 auto;
-      background: white;
-      padding: 40px 50px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      line-height: 1.6;
-    }
-    .doc-header {
-      text-align: center;
-      border-bottom: 3px double #000;
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-    }
-    .doc-header h1 {
-      font-size: 16px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      margin: 0 0 4px 0;
-      text-transform: uppercase;
-    }
-    .doc-header h2 {
-      font-size: 13px;
-      font-weight: normal;
-      margin: 0;
-      color: #333;
-    }
-    .section-title {
-      font-size: 13px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 24px 0 12px 0;
-      padding-bottom: 4px;
-      border-bottom: 1px solid #ccc;
-    }
-    .info-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 8px 0 16px 0;
-    }
-    .info-table td {
-      padding: 6px 12px;
-      font-size: 13px;
-      vertical-align: top;
-    }
-    .info-table td:first-child {
-      font-weight: bold;
-      width: 180px;
-      color: #333;
-    }
-    .itinerary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 12px 0;
-      font-size: 12px;
-    }
-    .itinerary-table th {
-      background: #f0f0f0;
-      padding: 8px 10px;
-      text-align: left;
-      font-weight: bold;
-      border: 1px solid #ccc;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
-    .itinerary-table td {
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      vertical-align: top;
-    }
-    .paragraph {
-      font-size: 13px;
-      margin: 10px 0;
-      text-align: justify;
-    }
-    .declaration {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #ccc;
-    }
-    .signature-block {
-      margin-top: 40px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .sig-line {
-      width: 200px;
-      border-top: 1px solid #000;
-      padding-top: 4px;
-      font-size: 12px;
-      text-align: center;
-    }
-    .footer-note {
-      margin-top: 30px;
-      padding-top: 12px;
-      border-top: 2px solid #000;
-      font-size: 10px;
-      color: #666;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
-  <div class="document">
-
-    <div class="doc-header">
-      <h1>REPUBLIC OF AUSTRIA</h1>
-      <h2>PROPOSED TRAVEL ITINERARY</h2>
-    </div>
-
-    <div class="section-title">APPLICANT INFORMATION</div>
-    <table class="info-table">
-      <tr><td>Surname</td><td>${surname}</td></tr>
-      <tr><td>Given Name</td><td>${firstName}</td></tr>
-      <tr><td>Nationality</td><td>${nationality}</td></tr>
-      <tr><td>Passport Nationality</td><td>${nationality}</td></tr>
-      <tr><td>Visa Category</td><td>Residence Permit (Pupil) – National Visa (D)</td></tr>
-      <tr><td>Country of Destination</td><td>Austria</td></tr>
-      <tr><td>Passport No</td><td>${passportNo}</td></tr>
-    </table>
-
-    <div class="section-title">INTERNATIONAL FLIGHT ITINERARY</div>
-    <table class="itinerary-table">
-      <tr>
-        <th>Travel Sector</th>
-        <th>Date</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Purpose</th>
-      </tr>
-      <tr>
-        <td>Outbound Journey</td>
-        <td>${arrival}</td>
-        <td>${borderCrossing}</td>
-        <td>Vienna International Airport (VIE), Austria</td>
-        <td>Entry into Austria for ${purpose}</td>
-      </tr>
-    </table>
-
-    <div class="section-title">DETAILED TRAVEL PLAN</div>
-
-    <p class="paragraph">
-      <strong>Departure:</strong>
-      The applicant intends to depart from ${borderCrossing} on ${arrival} for Vienna, Austria.
-    </p>
-
-    <p class="paragraph">
-      <strong>Arrival in Austria:</strong>
-      The applicant will arrive at Vienna International Airport (VIE), Austria for the purpose of ${purpose} under a Residence Permit (Pupil) and National Visa (D).
-    </p>
-
-    <p class="paragraph">
-      <strong>Internal Travel within Austria:</strong>
-      Upon arrival in Vienna, the applicant will be received by: ${invitingPerson}.
-      The applicant will thereafter travel from Vienna to destination by private vehicle arranged by ${invitingPerson}.
-    </p>
-
-    <div class="section-title">INSTITUTION DETAILS</div>
-    <table class="info-table">
-      <tr><td>School</td><td>${employerInfo}</td></tr>
-      <tr><td>Purpose of Stay</td><td>${purpose}</td></tr>
-      <tr><td>Country of Studies</td><td>Austria</td></tr>
-    </table>
-
-    <div class="section-title">ACCOMMODATION / DESTINATION ADDRESS</div>
-    <p class="paragraph" style="white-space: pre-line;">${invitingAddress}</p>
-
-    <div class="section-title">PURPOSE OF TRAVEL</div>
-    <p class="paragraph">
-      The purpose of travel is to enter Austria legally under a National Visa (D) and Residence Permit (Pupil) for ${purpose} purposes and to reside in Austria in accordance with Austrian immigration and residence regulations.
-    </p>
-
-    <div class="section-title">SUPPORTING TRAVEL INFORMATION</div>
-    <p class="paragraph">
-      • Valid ${nationality} Passport held by applicant<br>
-      • Confirmed destination and accommodation details in Austria<br>
-      • Internal transportation arranged from Vienna to destination<br>
-      • Compliance with Austrian visa and immigration requirements
-    </p>
-
-    <div class="declaration">
-      <div class="section-title">DECLARATION</div>
-      <p class="paragraph">
-        I hereby declare that the above-mentioned travel information and itinerary are true and correct to the best of my knowledge and are submitted in support of the Austria National Visa (D) and Residence Permit (Pupil) application.
-      </p>
-
-      <div class="signature-block">
-        <div class="sig-line">Applicant Signature</div>
-        <div class="sig-line">Date</div>
-        <div class="sig-line">Place: ${place}</div>
-      </div>
-
-      <p style="margin-top: 30px; font-size: 12px;">
-        Name of Applicant: <strong>${fullName}</strong>
-      </p>
-    </div>
-
-    <div class="footer-note">
-      This document was generated by the Austrian Visa Application Portal<br>
-      Application Reference: VD-${Date.now().toString(36).toUpperCase()}
-    </div>
-
-  </div>
-</body>
-</html>`;
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;padding:20px;background:#f5f5f5;"><div style="max-width:600px;margin:0 auto;background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);"><div style="background:linear-gradient(135deg,#673ab7,#7c4dff);padding:24px;text-align:center;"><h1 style="color:white;font-size:20px;margin:0;">REPUBLIC OF AUSTRIA</h1><p style="color:rgba(255,255,255,0.85);font-size:12px;margin:4px 0 0;">Travel Itinerary Document</p></div><div style="padding:24px;"><p style="font-size:14px;color:#333;">Dear <strong>' + fullName + '</strong>,</p><p style="font-size:13px;color:#555;line-height:1.6;">Your travel itinerary document has been generated. Please find the PDF attached to this email.</p><p style="font-size:13px;color:#555;line-height:1.6;">You can also view the document online:</p><div style="text-align:center;margin:20px 0;"><a href="' + docUrl + '" style="display:inline-block;background:#673ab7;color:white;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:13px;font-weight:500;">View Document</a></div><p style="font-size:11px;color:#999;margin-top:20px;border-top:1px solid #eee;padding-top:12px;">This is an automated email from the Austrian Visa Application Portal.<br>Application Reference: VD-' + Date.now().toString(36).toUpperCase() + '</p></div></div></body></html>';
 }
 
 // -----------------------------------------------
 // Build Admin Notification
 // -----------------------------------------------
-function buildAdminNotificationHtml(data) {
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="font-family:Arial,sans-serif; padding:20px;">
-  <h2 style="color:#673ab7;">New Visa D Application Received</h2>
-  <table style="border-collapse:collapse; width:100%; max-width:500px;">
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Name</td><td style="padding:8px; border-bottom:1px solid #eee;">${data.firstName} ${data.surname}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Email</td><td style="padding:8px; border-bottom:1px solid #eee;">${data.email}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Nationality</td><td style="padding:8px; border-bottom:1px solid #eee;">${data.currentNationality}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Purpose</td><td style="padding:8px; border-bottom:1px solid #eee;">${data.purposeOfJourney}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Arrival</td><td style="padding:8px; border-bottom:1px solid #eee;">${formatDate(data.arrivalDate)}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold; border-bottom:1px solid #eee;">Departure</td><td style="padding:8px; border-bottom:1px solid #eee;">${formatDate(data.departureDate)}</td></tr>
-    <tr><td style="padding:8px; font-weight:bold;">Stay Duration</td><td style="padding:8px;">${data.stayDuration} days</td></tr>
-  </table>
-</body>
-</html>`;
+function buildAdminNotificationHtml(data, docUrl) {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;padding:20px;"><h2 style="color:#673ab7;">New Visa D Application Received</h2><table style="border-collapse:collapse;width:100%;max-width:500px;"><tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee;">Name</td><td style="padding:8px;border-bottom:1px solid #eee;">' + data.firstName + ' ' + data.surname + '</td></tr><tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee;">Email</td><td style="padding:8px;border-bottom:1px solid #eee;">' + data.email + '</td></tr><tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee;">Nationality</td><td style="padding:8px;border-bottom:1px solid #eee;">' + data.currentNationality + '</td></tr><tr><td style="padding:8px;font-weight:bold;border-bottom:1px solid #eee;">Purpose</td><td style="padding:8px;border-bottom:1px solid #eee;">' + data.purposeOfJourney + '</td></tr><tr><td style="padding:8px;font-weight:bold;">Document</td><td style="padding:8px;"><a href="' + docUrl + '">View Itinerary</a></td></tr></table></body></html>';
 }
 
 // -----------------------------------------------
@@ -458,7 +312,7 @@ function doGet(e) {
 }
 
 // -----------------------------------------------
-// PREVIEW - Run this to see the document in browser
+// PREVIEW - Fill template with demo data
 // -----------------------------------------------
 function previewDocument() {
   const testData = {
@@ -467,6 +321,7 @@ function previewDocument() {
     nationality: '{{nationality}}',
     currentNationality: '{{nationality}}',
     passportNumber: '{{passportNumber}}',
+    visaCategory: 'Residence Permit (Pupil) – National Visa (D)',
     purposeOfJourney: '{{purpose}}',
     arrivalDate: '{{arrivalDate}}',
     departureDate: '{{departureDate}}',
@@ -476,45 +331,11 @@ function previewDocument() {
     invitingAddress: '{{hostAddress}}',
     employerInfo: '{{employerDetails}}',
     place: '{{signingPlace}}',
-    date: '{{signingDate}}'
+    date: '{{signingDate}}',
+    internalTo: '{{destination}}'
   };
 
-  const html = buildItineraryDocument(testData);
-
-  const output = HtmlService.createHtmlOutput(html)
-    .setWidth(800)
-    .setHeight(600);
-  SpreadsheetApp.getUi().showModalDialog(output, 'Itinerary Preview');
-}
-
-// -----------------------------------------------
-// PREVIEW IN NEW TAB - Opens preview in new browser tab
-// -----------------------------------------------
-function previewInNewTab() {
-  const testData = {
-    surname: '{{surname}}',
-    firstName: '{{firstName}}',
-    nationality: '{{nationality}}',
-    currentNationality: '{{nationality}}',
-    passportNumber: '{{passportNumber}}',
-    purposeOfJourney: '{{purpose}}',
-    arrivalDate: '{{arrivalDate}}',
-    departureDate: '{{departureDate}}',
-    stayDuration: '{{stayDuration}}',
-    borderCrossing: '{{borderCrossing}}',
-    invitingPerson: '{{hostName}}',
-    invitingAddress: '{{hostAddress}}',
-    employerInfo: '{{employerDetails}}',
-    place: '{{signingPlace}}',
-    date: '{{signingDate}}'
-  };
-
-  const html = buildItineraryDocument(testData);
-
-  const blob = HtmlService.createHtmlOutput(html).getBlob();
-  const file = DriveApp.createFile(blob).setName('Itinerary Preview.html');
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-
-  Logger.log('Preview URL: ' + file.getUrl());
-  return file.getUrl();
+  const doc = fillTemplate(testData);
+  Logger.log('Preview URL: ' + doc.getUrl());
+  return doc.getUrl();
 }
