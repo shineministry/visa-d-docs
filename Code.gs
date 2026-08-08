@@ -102,8 +102,8 @@ function fillTemplate(data) {
 
   // Replace all placeholders
   const replacements = {
-    '{{surname}}': surname,
-    '{{firstName}}': firstName,
+    '{{SURNAME}}': surname,
+    '{{FIRSTNAME}}': firstName,
     '{{fullName}}': fullName,
     '{{nationality}}': nationality,
     '{{passportNumber}}': passportNo,
@@ -119,6 +119,11 @@ function fillTemplate(data) {
     '{{signingDate}}': formatDate(data.date || new Date().toISOString().split('T')[0]),
     '{{destination}}': destination,
     '{{stayDuration}}': stayDuration,
+    '{{travelMethod}}': data.travelMethod || 'private vehicle',
+    '{{internalFrom}}': data.internalFrom || 'Vienna International Airport (VIE)',
+    '{{internalTo}}': destination,
+    '{{arrangedBy}}': data.arrangedBy || invitingPerson,
+    '{{email}}': data.email || '',
     '{{dateOfBirth}}': formatDate(data.dateOfBirth),
     '{{placeOfBirth}}': data.placeOfBirth || '',
     '{{countryOfBirth}}': data.countryOfBirth || '',
