@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visa D Application Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f0ebf8;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .form-header {
+      background: linear-gradient(135deg, #673ab7 0%, #7c4dff 100%);
+      padding: 24px 32px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .form-header h1 {
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      font-size: 32px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .form-container {
+      max-width: 640px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 8px;
+      padding: 24px 24px 8px 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+      border-top: 10px solid #673ab7;
+    }
+
+    .form-card h2 {
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #202124;
+      margin-bottom: 4px;
+    }
+
+    .form-card .subtitle {
+      font-size: 12px;
+      color: #5f6368;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #5f6368;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group label .required {
+      color: #d93025;
+      margin-left: 2px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="date"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-bottom: 1px solid #dadce0;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      color: #202124;
+      background: transparent;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-bottom: 2px solid #673ab7;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    .radio-group, .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .radio-group label, .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #202124;
+      cursor: pointer;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+
+    .radio-group input[type="radio"],
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      accent-color: #673ab7;
+      cursor: pointer;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 20px 0;
+    }
+
+    .file-upload {
+      border: 2px dashed #dadce0;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafafa;
+    }
+
+    .file-upload:hover {
+      border-color: #673ab7;
+      background: #f3e8fd;
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    .file-upload .upload-icon {
+      font-size: 36px;
+      color: #673ab7;
+      margin-bottom: 8px;
+    }
+
+    .file-upload p {
+      font-size: 14px;
+      color: #5f6368;
+    }
+
+    .file-upload .filename {
+      font-size: 12px;
+      color: #673ab7;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .submit-section {
+      text-align: center;
+      padding: 24px 0 40px 0;
+    }
+
+    .submit-btn {
+      background: #673ab7;
+      color: white;
+      border: none;
+      padding: 12px 48px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Google Sans', 'Roboto', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover {
+      background: #5e35b1;
+      box-shadow: 0 2px 8px rgba(103,58,187,0.4);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: #ff6d00;
+      z-index: 200;
+      transition: width 0.3s;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .success-message .check-icon {
+      width: 72px;
+      height: 72px;
+      background: #e8f5e9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+      color: #2e7d32;
+    }
+
+    .success-message h2 {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 24px;
+      color: #202124;
+      margin-bottom: 12px;
+    }
+
+    .success-message p {
+      color: #5f6368;
+      font-size: 14px;
+    }
+
+    .error-text {
+      color: #d93025;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .form-header h1 { font-size: 24px; }
+      .row, .row-3 { grid-template-columns: 1fr; }
+      .form-container { padding: 0 8px; }
+      .form-card { padding: 16px 16px 8px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+  <div class="form-header">
+    <h1>Visa D Application Form</h1>
+    <p>Application for a Visa for a stay exceeding 3 months (Visa D) &mdash; Austria</p>
+  </div>
+
+  <div class="form-container">
+    <form id="visaForm" onsubmit="return handleSubmit(event)">
+
+      <!-- Email - Prominent at Top -->
+      <div class="form-card" style="border-top-color: #ff6d00;">
+        <h2>Your Email Address</h2>
+        <p class="subtitle">A copy of your completed application will be sent to this email</p>
+
+        <div class="form-group">
+          <label>E-mail address *</label>
+          <input type="email" name="email" required placeholder="you@example.com">
+        </div>
+      </div>
+
+      <!-- SECTION 1: Personal Information -->
+      <div class="form-card">
+        <h2>Personal Information</h2>
+        <p class="subtitle">Fields marked with * are required</p>
+
+        <div class="form-group">
+          <label>Surname (Family name) *</label>
+          <input type="text" name="surname" required>
+        </div>
+
+        <div class="form-group">
+          <label>Surname at birth (Former family name(s))</label>
+          <input type="text" name="surnameAtBirth">
+        </div>
+
+        <div class="form-group">
+          <label>First name(s) (Given name(s)) *</label>
+          <input type="text" name="firstName" required>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Date of birth *</label>
+            <input type="date" name="dateOfBirth" required>
+          </div>
+          <div class="form-group">
+            <label>Place of birth *</label>
+            <input type="text" name="placeOfBirth" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Country of birth *</label>
+            <input type="text" name="countryOfBirth" required>
+          </div>
+          <div class="form-group">
+            <label>Current nationality *</label>
+            <input type="text" name="currentNationality" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nationality at birth (if different)</label>
+          <input type="text" name="nationalityAtBirth">
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Sex *</label>
+            <div class="radio-group">
+              <label><input type="radio" name="sex" value="Male" required> Male</label>
+              <label><input type="radio" name="sex" value="Female"> Female</label>
+              <label><input type="radio" name="sex" value="Other"> Other</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Marital status *</label>
+            <select name="maritalStatus" required>
+              <option value="">Select...</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Separated">Separated</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widow(er)">Widow(er)</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Travel Document -->
+      <div class="form-card">
+        <h2>Travel Document</h2>
+        <p class="subtitle">Details of your travel document</p>
+
+        <div class="form-group">
+          <label>Type of travel document *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="travelDocType" value="Ordinary passport" required> Ordinary passport</label>
+            <label><input type="radio" name="travelDocType" value="Diplomatic passport"> Diplomatic passport</label>
+            <label><input type="radio" name="travelDocType" value="Service passport"> Service passport</label>
+            <label><input type="radio" name="travelDocType" value="Official passport"> Official passport</label>
+            <label><input type="radio" name="travelDocType" value="Special passport"> Special passport</label>
+            <label><input type="radio" name="travelDocType" value="Other"> Other</label>
+          </div>
+        </div>
+
+        <div class="row-3">
+          <div class="form-group">
+            <label>Document number *</label>
+            <input type="text" name="docNumber" required>
+          </div>
+          <div class="form-group">
+            <label>Date of issue *</label>
+            <input type="date" name="docIssueDate" required>
+          </div>
+          <div class="form-group">
+            <label>Valid until *</label>
+            <input type="date" name="docValidUntil" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Issued by *</label>
+          <input type="text" name="docIssuedBy" required>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Contact Information -->
+      <div class="form-card">
+        <h2>Contact Information</h2>
+        <p class="subtitle">Your current address and contact details</p>
+
+        <div class="form-group">
+          <label>Home address and e-mail address *</label>
+          <textarea name="homeAddress" required rows="2" placeholder="Street, City, Postal code, Country"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Telephone *</label>
+          <input type="tel" name="telephone" required>
+        </div>
+
+        <div class="form-group">
+          <label>Residence in a country other than the country of current nationality</label>
+          <div class="radio-group">
+            <label><input type="radio" name="otherResidence" value="No"> No</label>
+            <label><input type="radio" name="otherResidence" value="Yes"> Yes</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Residence permit number</label>
+            <input type="text" name="residencePermitNr">
+          </div>
+          <div class="form-group">
+            <label>Residence permit valid until</label>
+            <input type="date" name="residencePermitValid">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Employment -->
+      <div class="form-card">
+        <h2>Employment Information</h2>
+        <p class="subtitle">Current occupation and employer details</p>
+
+        <div class="form-group">
+          <label>Current occupation *</label>
+          <input type="text" name="currentOccupation" required>
+        </div>
+
+        <div class="form-group">
+          <label>Employer name and address (or educational establishment for students) *</label>
+          <textarea name="employerInfo" required rows="2" placeholder="Employer name, address, telephone number"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 5: Travel Details -->
+      <div class="form-card">
+        <h2>Travel Details</h2>
+        <p class="subtitle">Purpose and details of your trip</p>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Purpose(s) of the journey *</label>
+            <input type="text" name="purposeOfJourney" required>
+          </div>
+          <div class="form-group">
+            <label>Border crossing point *</label>
+            <input type="text" name="borderCrossing" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Number of entries requested *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="entriesRequested" value="Single entry" required> Single entry</label>
+            <label><input type="radio" name="entriesRequested" value="Multiple entries"> Multiple entries</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Duration of intended stay (number of days) *</label>
+          <input type="number" name="stayDuration" min="1" required placeholder="e.g. 90">
+        </div>
+
+        <hr class="section-divider">
+
+        <h2 style="font-size:14px; margin-bottom:12px;">Visas issued during the past three years</h2>
+
+        <div class="form-group">
+          <div class="radio-group">
+            <label><input type="radio" name="pastVisas" value="No"> No</label>
+            <label><input type="radio" name="pastVisas" value="Yes"> Yes</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Number of past visas</label>
+            <input type="number" name="pastVisaCount" min="0">
+          </div>
+          <div class="form-group">
+            <label>Validity (from - to)</label>
+            <input type="text" name="pastVisaValidity" placeholder="e.g. 01/2023 - 12/2023">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 6: Fingerprints & Destination -->
+      <div class="form-card">
+        <h2>Fingerprints & Destination</h2>
+        <p class="subtitle">Previous fingerprints and entry permit details</p>
+
+        <div class="form-group">
+          <label>Fingerprints collected previously for a national Austrian visa?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="fingerprints" value="No"> No</label>
+            <label><input type="radio" name="fingerprints" value="Yes"> Yes</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Date (if known)</label>
+          <input type="date" name="fingerprintsDate">
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="form-group">
+          <label>Entry permit for country of final destination (if applicable)</label>
+          <input type="text" name="entryPermitDest" placeholder="Issued by">
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Entry permit valid from</label>
+            <input type="date" name="entryPermitFrom">
+          </div>
+          <div class="form-group">
+            <label>Entry permit valid until</label>
+            <input type="date" name="entryPermitUntil">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Intended date of arrival *</label>
+            <input type="date" name="arrivalDate" required>
+          </div>
+          <div class="form-group">
+            <label>Intended date of departure *</label>
+            <input type="date" name="departureDate" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 7: Inviting Person / Hotel -->
+      <div class="form-card">
+        <h2>Inviting Person / Accommodation</h2>
+        <p class="subtitle">Details of host or hotel in Austria</p>
+
+        <div class="form-group">
+          <label>Name of inviting person(s) or hotel(s) *</label>
+          <textarea name="invitingPerson" required rows="2" placeholder="Surname and first name of inviting person(s) or hotel name(s)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Address and e-mail of inviting person / hotel *</label>
+          <textarea name="invitingAddress" required rows="2" placeholder="Full address and email"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Telephone</label>
+          <input type="tel" name="invitingPhone">
+        </div>
+
+        <hr class="section-divider">
+
+        <div class="form-group">
+          <label>Name and address of inviting company / organisation</label>
+          <textarea name="invitingCompany" rows="2" placeholder="Company name and address"></textarea>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Company telephone</label>
+            <input type="tel" name="companyPhone">
+          </div>
+          <div class="form-group">
+            <label>Contact person in company</label>
+            <input type="text" name="companyContact" placeholder="Name, phone, email">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 8: Financial Information -->
+      <div class="form-card">
+        <h2>Financial Information</h2>
+        <p class="subtitle">Cost of travelling and living during your stay</p>
+
+        <div class="form-group">
+          <label>Cost of travelling and living covered by *</label>
+          <div class="radio-group">
+            <label><input type="radio" name="costCoveredBy" value="Applicant himself/herself" required> Applicant himself/herself</label>
+            <label><input type="radio" name="costCoveredBy" value="Sponsor"> Sponsor (host, company, organisation)</label>
+            <label><input type="radio" name="costCoveredBy" value="Other"> Other</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Means of support</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="meansOfSupport" value="Cash"> Cash</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Traveller's cheques"> Traveller's cheques</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Credit card"> Credit card</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Pre-paid accommodation"> Pre-paid accommodation</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Pre-paid transport"> Pre-paid transport</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Free Accommodation"> Free Accommodation</label>
+            <label><input type="checkbox" name="meansOfSupport" value="All expenses covered"> All expenses covered</label>
+            <label><input type="checkbox" name="meansOfSupport" value="Other"> Other</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 9: Photo & Signature Upload -->
+      <div class="form-card">
+        <h2>Photo & Signature</h2>
+        <p class="subtitle">Upload your passport photo and signature image</p>
+
+        <div class="form-group">
+          <label>Passport Photo * (JPEG/PNG, max 5MB)</label>
+          <div class="file-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
+            <div class="upload-icon">&#128247;</div>
+            <p>Click to upload your photo</p>
+            <div class="filename" id="photoFileName"></div>
+            <input type="file" id="photoInput" name="photo" accept="image/*" required onchange="handleFileSelect(this, 'photoFileName')">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Signature * (JPEG/PNG, max 5MB)</label>
+          <div class="file-upload" id="sigUpload" onclick="document.getElementById('sigInput').click()">
+            <div class="upload-icon">&#9998;</div>
+            <p>Click to upload your signature</p>
+            <div class="filename" id="sigFileName"></div>
+            <input type="file" id="sigInput" name="signature" accept="image/*" required onchange="handleFileSelect(this, 'sigFileName')">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 10: Declaration -->
+      <div class="form-card">
+        <h2>Declaration</h2>
+        <p class="subtitle">Please read and accept</p>
+
+        <div class="form-group">
+          <label style="font-size:13px; color:#202124; font-weight:400; line-height:1.6;">
+            I am aware that visa fee is not refunded if the visa is refused. I am aware of the need to have an adequate travel medical insurance for my first stay and any subsequent visits. I declare that all particulars supplied by me are correct and complete. I am aware that any false statement will lead to automatic rejection of my application or the annulment of a visa already granted.
+          </label>
+          <div class="checkbox-group" style="margin-top:8px;">
+            <label><input type="checkbox" name="declaration" required> I accept the declaration *</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <label>Place *</label>
+            <input type="text" name="place" required>
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" name="date" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <button type="submit" class="submit-btn" id="submitBtn">Submit Application</button>
+      </div>
+
+    </form>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+      <div class="check-icon">&#10003;</div>
+      <h2>Your application has been submitted</h2>
+      <p>Please check your email inbox (and spam folder) for a copy of your completed application form with all your answers and the original form pages.</p>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURATION - UPDATE THESE VALUES
+    // ============================================
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxHYqjY_89e88UiORvR1jzDPgczfBSo5NpS6pTuMYyDVg680OoYkQ51Q1DSLmadT6VM/exec';
+
+    function handleFileSelect(input, labelId) {
+      const label = document.getElementById(labelId);
+      if (input.files && input.files[0]) {
+        label.textContent = input.files[0].name;
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const form = document.getElementById('visaForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const progressBar = document.getElementById('progressBar');
+
+      // Validate declaration
+      if (!form.declaration.checked) {
+        alert('Please accept the declaration to proceed.');
+        return false;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      progressBar.style.width = '30%';
+
+      try {
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {};
+
+        // Text fields
+        for (const [key, value] of formData.entries()) {
+          if (key !== 'photo' && key !== 'signature' && key !== 'meansOfSupport') {
+            data[key] = value;
+          }
+        }
+
+        // Handle multiple checkboxes for meansOfSupport
+        const meansOfSupport = formData.getAll('meansOfSupport');
+        data.meansOfSupport = meansOfSupport.join(', ');
+
+        progressBar.style.width = '50%';
+
+        // Convert files to base64
+        const photoInput = document.getElementById('photoInput');
+        const sigInput = document.getElementById('sigInput');
+
+        if (photoInput.files[0]) {
+          data.photoBase64 = await fileToBase64(photoInput.files[0]);
+          data.photoName = photoInput.files[0].name;
+        }
+
+        if (sigInput.files[0]) {
+          data.signatureBase64 = await fileToBase64(sigInput.files[0]);
+          data.signatureName = sigInput.files[0].name;
+        }
+
+        progressBar.style.width = '70%';
+
+        // Send to Google Apps Script
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'text/plain' }
+        });
+
+        const result = await response.json();
+        progressBar.style.width = '100%';
+
+        if (!result.success) {
+          throw new Error(result.message);
+        }
+
+        // Show success
+        form.style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        window.scrollTo(0, 0);
+
+      } catch (error) {
+        alert('An error occurred: ' + error.message + '\nPlease try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+        progressBar.style.width = '0%';
+      }
+
+      return false;
+    }
+  </script>
+</body>
+</html>
