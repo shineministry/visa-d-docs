@@ -338,7 +338,7 @@ function doGet(e) {
 }
 
 // -----------------------------------------------
-// PREVIEW - Fill template with demo data
+// PREVIEW - Creates doc and returns URL
 // -----------------------------------------------
 function previewDocument() {
   const testData = {
@@ -358,10 +358,152 @@ function previewDocument() {
     employerInfo: '{{employerDetails}}',
     place: '{{signingPlace}}',
     date: '{{signingDate}}',
-    internalTo: '{{destination}}'
+    internalTo: '{{destination}}',
+    borderCountry: '{{borderCountry}}'
   };
 
   const doc = fillTemplate(testData);
   Logger.log('Preview URL: ' + doc.getUrl());
+  return doc.getUrl();
+}
+
+// -----------------------------------------------
+// SETUP TEMPLATE - Run this ONCE to update your Google Doc
+// -----------------------------------------------
+function setupTemplate() {
+  const doc = DocumentApp.openById(TEMPLATE_DOC_ID);
+  const body = doc.getBody();
+
+  // Clear entire document
+  body.clear();
+
+  // Set margins
+  body.setMarginTop(72);
+  body.setMarginBottom(72);
+  body.setMarginLeft(72);
+  body.setMarginRight(72);
+
+  // Build document content
+  const content = [
+    { text: '{{SURNAME}} {{FIRSTNAME}} - Travel Itinerary', style: 'title' },
+    { text: '', style: 'normal' },
+    { text: 'REPUBLIC OF AUSTRIA', style: 'centered' },
+    { text: 'RESIDENCE PERMIT (PUPIL) – STUDENT VISA', style: 'centered' },
+    { text: 'PROPOSED TRAVEL ITINERARY', style: 'centered' },
+    { text: '', style: 'normal' },
+    { text: 'APPLICANT INFORMATION', style: 'heading' },
+    { text: '', style: 'normal' },
+    { text: 'table:Particulars|Details|Surname|{{SURNAME}}|Given Name|{{FIRSTNAME}}|Nationality|{{nationality}}|Passport Nationality|Republic of {{passportCountry}}|Visa Category|{{visaCategory}}|Country of Destination|Austria|Passport No|{{passportNumber}}', style: 'table' },
+    { text: '', style: 'normal' },
+    { text: 'INTERNATIONAL FLIGHT ITINERARY', style: 'heading' },
+    { text: '', style: 'normal' },
+    { text: 'table:Travel Sector|Date|Departure|Arrival|Purpose|{{flightSector}}|{{arrivalDate}}|{{borderCrossing}}|{{arrivalAirport}}|{{flightPurpose}}', style: 'table' },
+    { text: '', style: 'normal' },
+    { text: 'DETAILED TRAVEL PLAN', style: 'heading' },
+    { text: '', style: 'normal' },
+    { text: 'Departure from {{passportCountry}}', style: 'subheading' },
+    { text: 'The applicant intends to depart from {{borderCrossing}} on {{arrivalDate}}, along with his parents, for Vienna, Austria.', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'Arrival in Austria', style: 'subheading' },
+    { text: 'The applicant will arrive at {{arrivalAirport}} for the purpose of {{purpose}} under a {{visaCategory}}.', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'Internal Travel within Austria', style: 'subheading' },
+    { text: 'Upon arrival in Vienna, the applicant will be received by:', style: 'normal' },
+    { text: '{{hostName}}', style: 'normal' },
+    { text: 'The applicant will thereafter travel from Vienna to {{destination}} by {{travelMethod}} arranged by {{arrangedBy}}.', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'INSTITUTION DETAILS', style: 'heading' },
+    { text: '', style: 'normal' },
+    { text: 'table:Particulars|Details|{{institutionLabel}}|{{institutionName}}|Purpose of Stay|{{purpose}}|Country of Studies|Austria', style: 'table' },
+    { text: '', style: 'normal' },
+    { text: 'ACCOMMODATION / DESTINATION ADDRESS', style: 'heading' },
+    { text: '{{hostAddress}}', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'PURPOSE OF TRAVEL', style: 'heading' },
+    { text: 'The purpose of travel is to enter Austria legally under a {{visaCategory}} for {{purpose}} and to reside in Austria in accordance with Austrian immigration and residence regulations.', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'SUPPORTING TRAVEL INFORMATION', style: 'heading' },
+    { text: 'Valid {{nationality}} Passport held by applicant', style: 'normal' },
+    { text: 'Confirmed destination and accommodation details in Austria', style: 'normal' },
+    { text: 'Internal transportation arranged from Vienna to {{destination}}', style: 'normal' },
+    { text: 'Compliance with Austrian visa and immigration requirements', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'DECLARATION', style: 'heading' },
+    { text: 'I hereby declare that the above-mentioned travel information and itinerary are true and correct to the best of my knowledge and are submitted in support of the Austria {{visaCategory}} application.', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'Applicant Signature: ___________________________', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'Name of Applicant: {{SURNAME}} {{FIRSTNAME}}', style: 'normal' },
+    { text: '', style: 'normal' },
+    { text: 'Date: {{signingDate}}', style: 'normal' },
+    { text: 'Place: {{signingPlace}}', style: 'normal' }
+  ];
+
+  // Build document
+  content.forEach(item => {
+    if (item.style === 'table' && item.text.startsWith('table:')) {
+      const tableData = item.text.replace('table:', '').split('|');
+      const rows = [];
+      for (let i = 0; i < tableData.length; i += 2) {
+        rows.push([tableData[i], tableData[i + 1]]);
+      }
+      const table = body.appendTable(rows);
+      // Style header row
+      const headerRow = table.getRow(0);
+      for (let c = 0; c < headerRow.getNumCells(); c++) {
+        const cell = headerRow.getCell(c);
+        cell.setBold(true);
+        cell.setFontFamily('Play');
+        cell.setFontSize(11);
+      }
+      // Style all cells
+      for (let r = 0; r < table.getNumRows(); r++) {
+        const row = table.getRow(r);
+        for (let c = 0; c < row.getNumCells(); c++) {
+          const cell = row.getCell(c);
+          cell.setFontFamily('Play');
+          cell.setFontSize(11);
+        }
+      }
+    } else if (item.style === 'title') {
+      const p = body.appendParagraph(item.text);
+      p.setFontFamily('Play');
+      p.setFontSize(20);
+      p.setBold(true);
+      p.setForegroundColor('#1a73e8');
+      p.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    } else if (item.style === 'centered') {
+      const p = body.appendParagraph(item.text);
+      p.setFontFamily('Play');
+      p.setFontSize(13);
+      p.setBold(true);
+      p.setForegroundColor('#1a73e8');
+      p.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    } else if (item.style === 'heading') {
+      const p = body.appendParagraph(item.text);
+      p.setFontFamily('Play');
+      p.setFontSize(14);
+      p.setBold(true);
+      p.setForegroundColor('#1a73e8');
+      p.setSpacingBefore(16);
+      p.setSpacingAfter(6);
+      body.appendHorizontalRule();
+    } else if (item.style === 'subheading') {
+      const p = body.appendParagraph(item.text);
+      p.setFontFamily('Play');
+      p.setFontSize(11);
+      p.setBold(true);
+      p.setSpacingAfter(4);
+    } else {
+      const p = body.appendParagraph(item.text);
+      p.setFontFamily('Play');
+      p.setFontSize(11);
+      p.setSpacingAfter(4);
+    }
+  });
+
+  doc.saveAndClose();
+  Logger.log('Template updated: ' + doc.getUrl());
   return doc.getUrl();
 }
