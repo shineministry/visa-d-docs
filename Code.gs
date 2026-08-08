@@ -21,6 +21,10 @@ function doPost(e) {
       return sendDemoEmail(data.email);
     }
 
+    if (data.action === 'preview') {
+      return handlePreview(data);
+    }
+
     return handleFormSubmission(data);
 
   } catch (err) {
@@ -144,6 +148,18 @@ function fillTemplate(data) {
 
   Logger.log('Document created: ' + doc.getUrl());
   return doc;
+}
+
+// -----------------------------------------------
+// Handle Preview - Create temporary doc for preview
+// -----------------------------------------------
+function handlePreview(data) {
+  const doc = fillTemplate(data);
+  const docUrl = doc.getUrl();
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ success: true, docUrl: docUrl }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 // -----------------------------------------------

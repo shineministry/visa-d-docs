@@ -299,6 +299,24 @@
       display: none;
     }
 
+    .preview-section {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .preview-section iframe {
+      width: 100%;
+      height: 700px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+
+    .preview-loading {
+      text-align: center;
+      padding: 40px;
+      color: #5f6368;
+    }
+
     @media (max-width: 600px) {
       .form-header h1 { font-size: 24px; }
       .row, .row-3 { grid-template-columns: 1fr; }
@@ -541,9 +559,20 @@
         </div>
       </div>
 
-      <!-- Submit -->
+      <!-- Preview & Submit -->
       <div class="submit-section">
+        <button type="button" class="submit-btn" style="background:#333; margin-right:8px;" onclick="previewDocument()">Preview Document</button>
         <button type="submit" class="submit-btn" id="submitBtn">Generate Itinerary</button>
+      </div>
+
+      <!-- Preview Section -->
+      <div class="preview-section" id="previewSection">
+        <div class="form-card">
+          <h2>Document Preview</h2>
+          <p class="subtitle">This is how your itinerary document will look</p>
+          <div id="previewLoading" class="preview-loading">Generating preview...</div>
+          <iframe id="previewFrame" style="display:none;" onload="document.getElementById('previewLoading').style.display='none'; this.style.display='block';"></iframe>
+        </div>
       </div>
 
     </form>
@@ -559,6 +588,7 @@
 
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxHYqjY_89e88UiORvR1jzDPgczfBSo5NpS6pTuMYyDVg680OoYkQ51Q1DSLmadT6VM/exec';
+    const TEMPLATE_DOC_ID = '1pbK2IfT1eTrScej1yUWRavA49qvCkAHlNUYRX2KFfvM';
 
     let segmentCount = 1;
 
@@ -641,6 +671,68 @@
 
     function removeSegment(btn) {
       btn.closest('.flight-segment').remove();
+    }
+
+    async function previewDocument() {
+      const form = document.getElementById('itineraryForm');
+      const previewSection = document.getElementById('previewSection');
+      const previewFrame = document.getElementById('previewFrame');
+      const previewLoading = document.getElementById('previewLoading');
+
+      // Collect form data
+      const formData = new FormData(form);
+      const data = {};
+
+      for (const [key, value] of formData.entries()) {
+        if (!key.includes('_')) {
+          data[key] = value;
+        }
+      }
+
+      // Collect flights
+      data.flights = [];
+      const segments = document.querySelectorAll('.flight-segment');
+      segments.forEach(seg => {
+        const num = seg.getAttribute('data-segment');
+        data.flights.push({
+          sector: formData.get(`sector_${num}`),
+          departDate: formData.get(`departDate_${num}`),
+          departTime: formData.get(`departTime_${num}`),
+          departAirport: formData.get(`departAirport_${num}`),
+          departCountry: formData.get(`departCountry_${num}`),
+          arrivalDate: formData.get(`arrivalDate_${num}`),
+          arrivalTime: formData.get(`arrivalTime_${num}`),
+          arrivalAirport: formData.get(`arrivalAirport_${num}`),
+          arrivalCountry: formData.get(`arrivalCountry_${num}`),
+          airline: formData.get(`airline_${num}`),
+          purpose: formData.get(`purpose_${num}`)
+        });
+      });
+
+      // Show preview section
+      previewSection.style.display = 'block';
+      previewLoading.style.display = 'block';
+      previewFrame.style.display = 'none';
+      previewSection.scrollIntoView({ behavior: 'smooth' });
+
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'preview', ...data }),
+          headers: { 'Content-Type': 'text/plain' }
+        });
+
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.message);
+
+        // Show the document in iframe
+        const docUrl = result.docUrl.replace('/edit', '/preview');
+        previewFrame.src = docUrl;
+
+      } catch (error) {
+        previewLoading.textContent = 'Error: ' + error.message;
+      }
     }
 
     async function handleSubmit(e) {
